@@ -263,8 +263,12 @@
       let globalEmailQueue = [];   // Right panel email statuses
       let currentActiveFilter = 'Done'; // Matches Table filter tabs
 
-      const socket = io("http://127.0.0.1:5000", {
-        transports: ["polling", "websocket"] 
+      // 🌐 Live PythonAnywhere Backend Endpoint URL
+      const BACKEND_URL = "https://adityarathi09.pythonanywhere.com";
+
+      // 🔌 Socket Connection Configuration (PythonAnywhere architecture only supports Polling transport)
+      const socket = io(BACKEND_URL, {
+        transports: ["polling"] 
       });
 
       // Handshake established
@@ -284,7 +288,7 @@
         renderOrdersTable();
       });
 
-      // Real-time Event Receiver: Triggered when save_order executes in order_history.py
+      // Real-time Event Receiver
       socket.on("new_order", function(order) {
         console.log("[SOCKET] Realtime Incoming Order Received:", order);
         
@@ -445,14 +449,15 @@
         });
       }
 
+      // ⚡ HTTP POST Endpoint Interface Refactored
       function triggerDirectAutomation(targetEmail) {
-        fetch("http://127.0.0.1:5000/run-automation-direct", {
+        fetch(`${BACKEND_URL}/run-automation-direct`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: targetEmail })
         })
         .then(res => res.json())
-        .catch(err => console.error(err));
+        .catch(err => console.error("API Fetch Error:", err));
       }
     </script>
   </body>

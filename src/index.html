@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Digital Deaft</title>
+     <style>
+        body { display: none; }
+    </style>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+      // Same Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyAtUOm-altWppyypwTJiUppRzUkYjac3bk",
+        authDomain: "digital-deaft-2026.firebaseapp.com",
+        projectId: "digital-deaft-2026",
+        storageBucket: "digital-deaft-2026.firebasestorage.app",
+        messagingSenderId: "605091613705",
+        appId: "1:605091613705:web:eed0c1b18c7cb1dfc83cd8",
+        measurementId: "G-CHSFWH9LFT"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Realtime session tracker
+      onAuthStateChanged(auth, (user) => {
+      if (user) {
+        localStorage.setItem("loggedUser", user.uid);
+        document.body.style.display = "block";
+        
+        const userName = user.displayName || (user.email ? user.email.split('@')[0] : "User");
+        localStorage.setItem("loggedUserName", userName); 
+        
+        const welcomeSpan = document.getElementById("user-welcome-name");
+        if (welcomeSpan) {
+          welcomeSpan.textContent = userName;
+        }
+      } else {
+        const localUser = localStorage.getItem("loggedUser");
+        
+        if (localUser && localUser !== "undefined" && localUser !== "null" && localUser.trim() !== "") {
+          document.body.style.display = "block";
+          const savedName = localStorage.getItem("loggedUserName") || "User";
+          const welcomeSpan = document.getElementById("user-welcome-name");
+          if (welcomeSpan) {
+            welcomeSpan.textContent = savedName;
+          }
+        } else {
+          localStorage.removeItem("loggedUser");
+          localStorage.removeItem("loggedUserName");
+          console.warn("[AUTH] No active session found. Redirecting to login...");
+          window.location.href = "/pages/samples/login.html";
+        }
+      }
+    });
+
+      // Logout Helper Function
+      window.logoutUser = function() {
+          signOut(auth).then(() => {
+              localStorage.removeItem("loggedUser");
+              window.location.href = "/pages/samples/login.html";
+          }).catch((err) => {
+              alert("Logout Error: " + err.message);
+          });
+      }
+    </script>
+    
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="assets/vendors/feather/feather.css">
+    <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="assets/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/vendors/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="assets/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+    <link rel="stylesheet" type="text/css" href="assets/js/select.dataTables.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="shortcut icon" href="assets/images/favicon.png" />
+  </head>
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <div class="row p-0 m-0 proBanner" id="proBanner">
+        <div class="col-md-12 p-0 m-0"></div>
+      </div>
+      
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <a class="navbar-brand brand-logo" href="index.html">
+              <h4>Digital Deaft</h4>
+            </a>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold" id="user-welcome-name">User</span></h1>
+              <h3 class="welcome-sub-text">Your performance summary this week</h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="assets/images/faces/face8.jpg" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <a class="dropdown-item" href="javascript:void(0);" onclick="logoutUser()"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Features</li>
+            <li class="nav-item">
+              <a class="nav-link" href="pages/samples/emailautomation.html">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Email Automation</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pages/samples/orders.html">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Orders</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-selected="true" onclick="filterOrdersByStatus('Done')">Today's Orders</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-selected="false" onclick="filterOrdersByStatus('Running')">Pending Orders</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-selected="false" onclick="filterOrdersByStatus('Failed')">Failed Orders</a>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div class="tab-content tab-content-basic">
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                      <div class="row">
+                        
+                        <!-- 🎯 LEFT PANEL: REAL-TIME LIVE CONFIRMED ORDERS -->
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded shadow-sm">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start border-bottom pb-3">
+                                    <div>
+                                      <h4 class="card-title card-title-dash" id="orders-table-title" style="font-weight: 700; color: #1F3BB3;">Today's Confirmed Orders</h4>
+                                      <p class="card-subtitle card-subtitle-dash">Real-time Amazon Purchase Sync</p>
+                                    </div>
+                                    <div>
+                                      <span class="badge badge-pill badge-primary" style="padding: 6px 12px; font-weight: bold;">LIVE XML FEED</span>
+                                    </div>
+                                  </div>
+                                  
+                                  <div class="table-responsive mt-3" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table select-table">
+                                      <thead>
+                                        <tr style="background-color: #f8f9fa;">
+                                          <th style="font-weight: 600; color: #333;">Order ID</th>
+                                          <th style="font-weight: 600; color: #333;">Product Details</th>
+                                          <th style="font-weight: 600; color: #333;">Customer</th>
+                                          <th style="font-weight: 600; color: #333;">Total Price</th>
+                                          <th style="font-weight: 600; color: #333;">Status</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody id="realtime-orders-table-body">
+                                        <tr>
+                                          <td colspan="5" class="text-center text-muted py-5">
+                                            <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                                            Awaiting active transaction push...
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- 🎯 RIGHT PANEL: LIVE AUTOMATION QUEUE -->
+                        <div class="col-lg-4 d-flex flex-column">
+                          <div class="card card-rounded shadow-sm">
+                            <div class="card-body">
+                              <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="card-title card-title-dash">Live Email Automation Queue</h4>
+                                <button id="master-sync-btn" onclick="triggerSync()" class="btn btn-icons btn-rounded btn-primary text-white" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none;">
+                                  <i class="mdi mdi-refresh"></i>
+                                </button>
+                              </div>
+                              
+                              <div class="custom-queue-wrapper" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                                <ul class="list-unstyled" id="email-queue-list">
+                                  <li class="text-muted p-3 text-center">Establishing Handshake with Server...</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2026. All rights reserved.</span>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+    
+    <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="assets/js/off-canvas.js"></script>
+    <script src="assets/js/template.js"></script>
+    
+    <!-- Real-time Socket Connection Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      let globalAmazonOrders = []; // Actual confirmation orders array 
+      let globalEmailQueue = [];   // Right panel email statuses
+      let currentActiveFilter = 'Done'; // Matches Table filter tabs
+
+      const socket = io("http://127.0.0.1:5000", {
+        transports: ["polling", "websocket"] 
+      });
+
+      // Handshake established
+      socket.on("connect", function() {
+        console.log("[SOCKET] Intercept server socket connection pipeline established.");
+        const loggedUser = localStorage.getItem("loggedUser") || "default_user";
+        
+        // Fetch initial datasets
+        socket.emit("get_initial_list", { user_id: loggedUser });
+        socket.emit("get_initial_orders", { user_id: loggedUser }); // Trigger list dump
+      });
+
+      // Initial historical order payload loader
+      socket.on("initial_orders_list", function(orders) {
+        console.log("[SOCKET] Orders history stream fetched:", orders);
+        globalAmazonOrders = orders;
+        renderOrdersTable();
+      });
+
+      // Real-time Event Receiver: Triggered when save_order executes in order_history.py
+      socket.on("new_order", function(order) {
+        console.log("[SOCKET] Realtime Incoming Order Received:", order);
+        
+        // Push or Update Order matching ID
+        const index = globalAmazonOrders.findIndex(o => o.order_id === order.order_id);
+        if (index !== -1) {
+          globalAmazonOrders[index] = order;
+        } else {
+          globalAmazonOrders.unshift(order); // Put new order on top
+        }
+        renderOrdersTable();
+      });
+
+      // Sidebar list updater
+      socket.on("update_email_list", function(payload) {
+        console.log("[SOCKET] Email status stack changed:", payload);
+        if (payload && payload.emails) {
+          globalEmailQueue = payload.emails;
+          renderSidebarQueue(payload.emails);
+        }
+      });
+
+      // Filter Selector Actions
+      function filterOrdersByStatus(status) {
+        currentActiveFilter = status;
+        const titleElement = document.getElementById("orders-table-title");
+        if (titleElement) {
+          if (status === 'Done') titleElement.innerText = "Today's Confirmed Orders";
+          else if (status === 'Running') titleElement.innerText = "Pending & Active Processing Orders";
+          else if (status === 'Failed') titleElement.innerText = "Cancelled / Failed Orders";
+        }
+        renderOrdersTable();
+      }
+
+      // Render Orders Table
+      function renderOrdersTable() {
+        const tbody = document.getElementById("realtime-orders-table-body");
+        if (!tbody) return;
+
+        const filtered = globalAmazonOrders.filter(order => {
+          if (currentActiveFilter === 'Running') {
+            return order.status === 'Running' || order.status === 'Pending' || order.status === 'Processing';
+          }
+          return order.status === currentActiveFilter;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted py-5">
+                <i class="mdi mdi-information-outline me-2" style="font-size: 18px; vertical-align: middle;"></i>
+                No records matching filter tab found.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = ""; // Clear loader
+
+        filtered.forEach(order => {
+          let badgeClass = "badge-opacity-warning";
+          let statusLabel = order.status;
+
+          if (order.status === "Done" || order.status === "Completed") {
+            badgeClass = "badge-opacity-success";
+            statusLabel = "Confirmed";
+          } else if (order.status === "Running" || order.status === "Processing") {
+            badgeClass = "badge-opacity-primary";
+            statusLabel = "Processing";
+          } else if (order.status === "Failed" || order.status === "Cancelled") {
+            badgeClass = "badge-opacity-danger";
+            statusLabel = "Failed";
+          }
+
+          const imgUrl = order.product_image || "assets/images/favicon.png";
+          const pName = order.product_name || "Amazon Automated Product";
+          const shortName = pName.length > 35 ? pName.substring(0, 35) + "..." : pName;
+
+          const tr = document.createElement("tr");
+          tr.style.borderBottom = "1px solid #f3f3f3";
+          tr.innerHTML = `
+            <td class="py-3">
+              <span class="text-muted font-monospace" style="font-size: 11px; background: #f8f9fa; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
+                ${order.order_id}
+              </span>
+            </td>
+            <td class="py-3" style="max-width: 250px;">
+              <div class="d-flex align-items-center">
+                <img src="${imgUrl}" alt="item-image" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; margin-right: 12px; border: 1px solid #eaeaea;">
+                <div>
+                  <strong class="text-dark" style="font-size: 13px;" title="${pName}">${shortName}</strong>
+                  <span class="text-muted d-block" style="font-size: 11px;">Qty: ${order.quantity}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-3">
+              <div style="font-weight: bold; font-size: 12.5px; color:#2c3e50;">${order.customer_name}</div>
+              <span class="text-muted font-monospace" style="font-size: 11px;">${order.amazon_email}</span>
+            </td>
+            <td class="py-3">
+              <strong style="color: #2b2b2b; font-size: 13px;">${order.checkout_total}</strong>
+              <div class="text-muted" style="font-size: 9.5px; font-weight: bold;">${order.payment_method}</div>
+            </td>
+            <td class="py-3">
+              <span class="badge ${badgeClass}" style="font-size: 10px; padding: 5px 10px; font-weight: bold;">
+                ${statusLabel}
+              </span>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Render Sidebar Queue List
+      function renderSidebarQueue(emails) {
+        const queueContainer = document.getElementById("email-queue-list");
+        if (!queueContainer) return;
+
+        if (!emails || emails.length === 0) {
+          queueContainer.innerHTML = '<li class="text-muted p-3 text-center">No queue found</li>';
+          return;
+        }
+
+        queueContainer.innerHTML = "";
+
+        emails.forEach((item) => {
+          let badgeClass = "badge-opacity-warning";
+          if (item.status === "Running") badgeClass = "badge-opacity-primary";
+          if (item.status === "Done") badgeClass = "badge-opacity-success";
+          if (item.status === "Failed") badgeClass = "badge-opacity-danger";
+
+          const li = document.createElement("li");
+          li.style.borderBottom = "1px solid #f3f3f3";
+          li.style.padding = "10px 0";
+          
+          li.innerHTML = `
+            <div class="w-100 d-flex align-items-center justify-content-between">
+              <label class="mb-0" style="max-width: 60%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                <input type="checkbox" ${item.status === 'Done' ? 'checked' : ''} disabled style="transform: scale(1.1); vertical-align: middle;"> 
+                <strong style="color: #2b2b2b; font-size: 13px; margin-left: 8px;">${item.email}</strong>
+                <br>
+                <span style="font-size: 10px; color: #888; margin-left: 24px;">Firebase: ${item.id}</span>
+              </label>
+              
+              <div class="d-flex align-items-center" style="gap: 8px;">
+                <span class="badge ${badgeClass}" style="font-size: 10px; padding: 4px 8px;">${item.status}</span>
+                <button class="btn btn-sm btn-primary text-white" 
+                        style="padding: 4px 8px; font-size: 11px; font-weight: bold;"
+                        onclick="triggerDirectAutomation('${item.email}')"
+                        ${item.status === 'Running' ? 'disabled' : ''}>
+                  ${item.status === 'Running' ? 'Run' : 'Start'}
+                </button>
+              </div>
+            </div>
+          `;
+          queueContainer.appendChild(li);
+        });
+      }
+
+      function triggerDirectAutomation(targetEmail) {
+        fetch("http://127.0.0.1:5000/run-automation-direct", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: targetEmail })
+        })
+        .then(res => res.json())
+        .catch(err => console.error(err));
+      }
+    </script>
+  </body>
+</html>

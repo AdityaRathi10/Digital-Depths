@@ -96,22 +96,25 @@
   const errorDiv = document.getElementById('errorMessage');
 
   // ========================================================
-  // ⚡ 1. AUTO-REDIRECT CHECK (Agar pehle se login ho)
+  // ⚡ 1. AUTO-REDIRECT CHECK
   // ========================================================
   onAuthStateChanged(auth, (user) => {
       if (user) {
           console.log("[SYSTEM] Active session found! Redirecting to dashboard...");
-          // Flask routing ke mutabik root path '/' ya '/index.html' use karein
+          // Vercel par relative path bilkul sahi kaam karega
           window.location.href = "/index.html";
       }
   });
 
   // ========================================================
-  // ⚡ 2. BROWSER CLOSE EVENT (Flask Server Auto-Terminate)
+  // ⚡ 2. BROWSER CLOSE EVENT (🚨 UPDATED FOR PRODUCTION)
   // ========================================================
   window.addEventListener('beforeunload', function () {
-      // Jab client window/tab band karega, yeh backend ko shutdown trigger bhejega
-      navigator.sendBeacon("http://127.0.0.1:5500/shutdown");
+      // 📝 AGAR AUTOMATION STOP KARNA HAI: Toh niche apna PythonAnywhere URL dalein
+      // 📝 AGAR SERVER SHUTDOWN THA: Toh ise comment hi rehne dein taaki server crash na ho
+      
+      // const BACKEND_URL = "https://aapka-username.pythonanywhere.com";
+      // navigator.sendBeacon(`${BACKEND_URL}/stop-task`); 
   });
 
   // ========================================================
